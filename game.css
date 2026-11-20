@@ -14,3 +14,21 @@
 
 #sound[aria-pressed="true"]{color:var(--gold);border-color:#8b8058}
 @media(max-width:600px){body>header{height:auto;min-height:65px;flex-wrap:wrap;gap:6px;padding-block:7px}body>header nav{margin-left:auto}}
+
+#river{touch-action:none;user-select:none}
+.dpad{display:grid;grid-template-columns:repeat(3,56px);grid-template-areas:". up ." "left down right"}
+.dpad [data-do="move-up"]{grid-area:up}
+.dpad [data-do="move-left"]{grid-area:left}
+.dpad [data-do="move-down"]{grid-area:down}
+.dpad [data-do="move-right"]{grid-area:right}
+.river-pause{text-align:center;margin-bottom:8px}
+
+.river-controls{width:100%;max-width:800px;margin:12px auto;display:grid;grid-template-columns:1fr auto 1fr;align-items:start}
+.river-controls .dpad{grid-column:2;margin:0;touch-action:none;user-select:none}
+.river-controls .dpad button{touch-action:none;-webkit-touch-callout:none}
+.river-controls .river-pause{grid-column:3;justify-self:end;margin:0}
+@media(max-width:430px){
+ .river-controls{grid-template-columns:1fr auto}
+ .river-controls .dpad{grid-column:1;justify-self:center}
+ .river-controls .river-pause{grid-column:2}
+}

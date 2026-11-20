@@ -15,12 +15,12 @@ const data={limestone:["石灰岩","千層蛋糕屬於沉積岩，主要成分�
 const trio=["talc","calcite","quartz"],hard={talc:1,calcite:3,quartz:7};
 const names=["河岸救援","刻痕機關室","展場輸送帶"];
 const labels=["出發集合","河岸救援","岩石觀察台","刻痕機關室","展場輸送帶","岩礦博物館","玉里稻田"];
-const $=id=>document.getElementById(id),main=$("main"),key="class6a.rockrescue.quiz20";
+const $=id=>document.getElementById(id),main=$("main"),key="class6a.rockrescue.riverRoutes";
 function shuffle(arr){let copy=[...arr];for(let i=copy.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[copy[i],copy[j]]=[copy[j],copy[i]]}return copy}
 function fresh(hero){return {hero,stage:1,x:0,y:2,found:[],rock:0,model:0,parts:[],turn:0,known:[],tests:[],rank:[],cargoVersion:2,queue:drawCargoRound(),delivered:0,miss:0,soil:0}}
 let s;
 try {
- s=JSON.parse(localStorage.getItem(key)) || JSON.parse(localStorage.getItem("class6a.rockrescue.v3")) || JSON.parse(localStorage.getItem("yuli.fieldclub.museum.v2")) || JSON.parse(localStorage.getItem("yuli.fieldclub.v1"));
+ s=JSON.parse(localStorage.getItem(key)) || JSON.parse(localStorage.getItem("class6a.rockrescue.quiz20")) || JSON.parse(localStorage.getItem("class6a.rockrescue.v3")) || JSON.parse(localStorage.getItem("yuli.fieldclub.museum.v2")) || JSON.parse(localStorage.getItem("yuli.fieldclub.v1"));
  if(s?.stage===3 && !allTrialsDone(s.tests)) s.rank=[];
  if(s?.stage===2 && !s.turn) s.parts=[];
 } catch { s=null }
@@ -43,7 +43,8 @@ function item(id,action,selected=false){return btn(action,img(id)+data[id][0],"i
 function talk(i,msg,own){return '<div class="dialogue">'+hero(i)+'<div><strong>'+people[i][0]+(i===s.hero?"・我":"・隊友")+'</strong><p>'+(i===s.hero&&own?own:msg)+'</p></div></div>'}
 function unlock(...ids){s.known=[...new Set([...s.known,...ids])]}
 function modal(title,html){$("dialogbody").innerHTML="<h2>"+title+"</h2>"+html;if(!$("dialog").open)$("dialog").showModal()}
-function render(){closeMuseumViewer();cancelAnimationFrame(anim);clearInterval(runTimer);if(lobby){renderLobby();return}
+let riverListeners=null;
+function render(){riverListeners?.abort();closeMuseumViewer();cancelAnimationFrame(anim);clearInterval(runTimer);if(lobby){renderLobby();return}
  const content=[null,riverScreen,rockScreen,labScreen,beltScreen,museumScreen,soilScreen][s.stage]();
  main.innerHTML='<section class="stage"><div class="stagehead"><div><span class="eyebrow">六年甲班岩礦救援隊　 /　'+(s.stage===6?"支線任務":"救援任務")+'</span><h1>'+labels[s.stage]+'</h1></div>'+btn("home","⌂　集合處")+'</div>'+content+'</section>';
  if(s.stage===5)openMuseumViewer();
@@ -53,7 +54,7 @@ function render(){closeMuseumViewer();cancelAnimationFrame(anim);clearInterval(r
  if(s.stage===4){setupChute();if(racing)startClock()}
 }
 function renderLobby(){const resume=!!s;main.innerHTML='<div class="lobby"><section class="scene"><div class="scenehead"><span class="eyebrow">✦　HUALIEN · YULI</span><h1><span class="class-name">六年甲班</span>岩礦救援隊</h1><p>找回失落標本，重開校園自然展。</p></div>'+hero(pick,"sprite lead")+'<div class="scenefoot"><span class="tag">●　集合地點</span><b>花東縱谷・玉里田野</b></div></section><section class="box"><span class="eyebrow">SELECT YOUR EXPLORER</span><h2>選擇探險隊員</h2><p>選一位出發，其他八位將在途中接應。</p><div class="roster">'+people.map((p,i)=>btn("pick-"+i,hero(i)+p[0],"char"+(i===pick?" sel":""),'aria-pressed="'+(i===pick)+'"')).join("")+'</div><p class="desc"><strong>◆　'+people[pick][0]+'</strong><br>'+people[pick][1]+'</p>'+btn("start","▶　"+(resume?"開啟新冒險":"集合出發"),"action wide")+(resume?btn("resume","繼續"+people[s.hero][0]+"的進度 · "+labels[s.stage],"wide",'style="margin-top:8px"'):"")+'</section></div><section class="route"><h3>探險路線</h3><div class="missions">'+names.map((name,i)=>'<div class="mission">'+img(["limestone","quartz","granite"][i])+'<div><small>MISSION 0'+(i+1)+'</small><strong>'+name+'</strong></div></div>').join("")+'</div></section>'}
-function riverScreen(){return talk(0,"自然展的推車翻了！沿棧道拿回兩箱標本，再去右岸找恩哥。","我來帶隊！先拿回兩箱標本，再去右岸找恩哥。")+'<div class="riverwrap"><canvas id="river" width="800" height="350" role="img" aria-label="棧道地圖，使用下方方向按鈕或方向鍵移動"></canvas></div><div class="dpad">'+[["left","◀","左"],["up","▲","上"],["down","▼","下"],["right","▶","右"]].map(a=>btn("move-"+a[0],a[1],"",'aria-label="往'+a[2]+'"')).join("")+btn("pause",paused?"▶ 繼續":"Ⅱ 暫停")+'</div><p align="center" id="riverstat">標本箱 '+s.found.length+' / 2　｜　點相鄰木板或用方向鍵移動，避開移動的木箱。</p>'}
+function riverScreen(){return talk(0,"自然展的推車翻了！沿棧道拿回兩箱標本，再去右岸找恩哥。","我來帶隊！先拿回兩箱標本，再去右岸找恩哥。")+'<div class="riverwrap"><canvas id="river" width="800" height="350" role="img" aria-label="棧道地圖，可用手指拖曳、畫面方向鈕或鍵盤方向鍵移動"></canvas></div><div class="river-controls"><div class="dpad">'+[["up","▲","上"],["left","◀","左"],["down","▼","下"],["right","▶","右"]].map(a=>btn("move-"+a[0],a[1],"",'aria-label="往'+a[2]+'"')).join("")+'</div><div class="river-pause">'+btn("pause",paused?"▶ 繼續":"Ⅱ 暫停")+'</div></div><p align="center" id="riverstat">標本箱 '+s.found.length+' / 2　｜　拖曳地圖或按方向鍵移動，避開移動的木箱。</p>'}
 const specimens=["limestone","granite"],parts=[["calcite"],["feldspar","quartz","mica"]];
 function rockQuestions(n) {
  const ids=n?["quartz","talc","mica","feldspar"]:["talc","calcite","quartz"];
@@ -111,11 +112,11 @@ function action(a){let [op,v]=a.split("-");if(op==="pick"){pick=+v;render();retu
  if(op==="results"){showResults();return}
  if(op==="race"){s.queue=drawCargoRound();s.delivered=s.miss=0;s.time=null;elapsed=timerStart=0;racing=true;go(4);return}if(op==="soil"){soilTime=s.soil?3:0;go(6);return}if(op==="backWin"){go(5);return}if(op==="sow"){if(soilTime<3){notify("把時間往前推，看看土壤如何形成。");return}s.soil=1;save();modal("稻穗成熟了！","<p>你讓岩石的風化物和腐植質經過長時間形成土壤，完成玉里稻田支線。</p>");return}
  save();render()}
-document.addEventListener("click",e=>{let b=e.target.closest("[data-do]");if(b){tone(460);action(b.dataset.do)}});document.addEventListener("input",e=>{if(e.target.id==="soilrange"){soilTime=+e.target.value;$("soilscene").textContent=earth[soilTime];$("soilnote").textContent=soilNotes[soilTime]}});
+document.addEventListener("click",e=>{let b=e.target.closest("[data-do]");if(b){if(b.closest(".dpad")&&e.detail>0)return;tone(460);action(b.dataset.do)}});document.addEventListener("input",e=>{if(e.target.id==="soilrange"){soilTime=+e.target.value;$("soilscene").textContent=earth[soilTime];$("soilnote").textContent=soilNotes[soilTime]}});
 let swipeX=null;document.addEventListener("pointerdown",e=>{if(e.target.closest(".slots"))swipeX=e.clientX});document.addEventListener("pointerup",e=>{if(swipeX!==null&&Math.abs(e.clientX-swipeX)>50&&s?.stage===3&&!lobby)action("test");swipeX=null});
 function book(){let known=s?.known||[];modal("田野圖鑑",'<p>已收錄 '+known.length+' / 7 種岩礦，完成觀察或刻劃即可解鎖。</p><div class="journal">'+Object.entries(data).map(([k,d])=>'<article>'+(known.includes(k)?img(k)+"<h3>"+d[0]+"</h3><p>"+d[1]+"</p>":"<span class=tiny>尚待調查</span><h3>？</h3>")+'</article>').join("")+'</div>')}
-$("book").onclick=book;$("help").onclick=()=>modal("探險手冊","<p>① 在集合處選主角。沿河岸用方向鍵、方向鈕或點相鄰木板移動，收集兩箱標本。</p><p>② 觀察岩石並補齊成分。到工作臺試刻兩種礦物，再依硬度排列。</p><p>③ 根據每箱的線索，從四個展櫃選一個。答對得 1 分，累計 7 分過關。完成主線會進入岩礦博物館，可轉動館藏、探索岩石變質，也可挑戰競速或到稻田栽種。</p><p>可用 Tab 或左右鍵移動按鈕焦點，Enter 操作。進度會儲存在本瀏覽器。</p>");$("close").onclick=()=>$("dialog").close();
-document.addEventListener("keydown",e=>{let dir={ArrowLeft:"left",ArrowRight:"right",ArrowUp:"up",ArrowDown:"down"}[e.key];if(!dir||e.target.tagName==="INPUT")return;if(!lobby&&s.stage===1&&!$("dialog").open){e.preventDefault();moveRiver(dir);return}let arr=[...document.querySelectorAll($("dialog").open?"dialog button":"header button,main button")];if(!arr.length)return;e.preventDefault();arr[(arr.indexOf(document.activeElement)+(dir==="left"||dir==="up"?-1:1)+arr.length)%arr.length].focus()});
+$("book").onclick=book;$("help").onclick=()=>modal("探險手冊","<p>① 在集合處選主角。沿河岸用手指拖曳地圖、畫面方向鈕或鍵盤方向鍵移動，收集兩箱標本。</p><p>② 觀察岩石並補齊成分。到工作臺試刻兩種礦物，再依硬度排列。</p><p>③ 根據每箱的線索，從四個展櫃選一個。答對得 1 分，累計 7 分過關。完成主線會進入岩礦博物館，可轉動館藏、探索岩石變質，也可挑戰競速或到稻田栽種。</p><p>可用 Tab 或左右鍵移動按鈕焦點，Enter 操作。進度會儲存在本瀏覽器。</p>");$("close").onclick=()=>$("dialog").close();
+document.addEventListener("keydown",e=>{let dir={ArrowLeft:"left",ArrowRight:"right",ArrowUp:"up",ArrowDown:"down"}[e.key];if(!dir||e.target.tagName==="INPUT")return;if(!lobby&&s.stage===1&&!$("dialog").open){e.preventDefault();if(!paused&&!e.repeat)holdRiver(e.key,dir);return}let arr=[...document.querySelectorAll($("dialog").open?"dialog button":"header button,main button")];if(!arr.length)return;e.preventDefault();arr[(arr.indexOf(document.activeElement)+(dir==="left"||dir==="up"?-1:1)+arr.length)%arr.length].focus()});
 
 const riverTiles=[[1,1,1,0,1,1,1],[0,1,1,1,1,0,1],[1,1,0,1,1,1,1],[1,1,1,1,0,1,1]];
 const caches=[[2,0],[5,3]], riverArt=new Map();
@@ -123,18 +124,125 @@ let riverTime=0,lastFrame=0,grace=0;
 function bitmap(file){if(!riverArt.has(file)){let im=new Image();im.src="assets/"+file+".png";riverArt.set(file,im)}return riverArt.get(file)}
 function pos(x,y){return [68+x*110,99+y*65]}
 function obstacles(){return [[1+Math.abs((riverTime*.001%6)-3),1],[3+Math.abs((riverTime*.0008%6)-3),2]]}
-function moveRiver(dir){if(paused||$("dialog").open||lobby||s.stage!==1)return;let [dx,dy]={left:[-1,0],right:[1,0],up:[0,-1],down:[0,1]}[dir];let x=s.x+dx,y=s.y+dy;if(!riverTiles[y]?.[x]){notify("走相鄰的木板，繞過水面。");return}s.x=x;s.y=y;let i=caches.findIndex(([a,b])=>a===x&&b===y);if(i>=0&&!s.found.includes(i)){s.found.push(i);tone(925);notify("取得標本箱 "+(i+1)+"！")}if(x===6&&y===0){if(s.found.length===2){go(2);return}notify("恩哥：還有標本箱在棧道上！")}save();updateRiverStatus()}
-function updateRiverStatus(){let el=$("riverstat");if(el)el.textContent="標本箱 "+s.found.length+" / 2　｜　"+(s.found.length===2?"帶著標本走到右上角接應點。":"點相鄰木板或使用方向鍵，避開滾動的木箱。")}
+const riverDirections={left:[-1,0],right:[1,0],up:[0,-1],down:[0,1]};
+let riverStep=null;
+const heldRiver=new Map();
+const riverSpeed=240; // Canvas pixels per second on either axis.
+function onRiverRoute(x,y){
+ return !!((Number.isInteger(y)&&riverTiles[y]?.[Math.floor(x)]&&riverTiles[y]?.[Math.ceil(x)])||
+  (Number.isInteger(x)&&riverTiles[Math.floor(y)]?.[x]&&riverTiles[Math.ceil(y)]?.[x]));
+}
+function restoreRiverPosition(){
+ // Older saves may place the hero between two unconnected boards.
+ let best=Infinity,nearest=[0,2];
+ for(let row=0;row<=15;row++)for(let col=0;col<=30;col++){
+  const x=col/5,y=row/5;
+  if(!onRiverRoute(x,y))continue;
+  const distance=Math.hypot((s.x-x)*110,(s.y-y)*65);
+  if(distance<best){best=distance;nearest=[x,y]}
+ }
+ [s.x,s.y]=nearest;
+}
+function holdRiver(source,dir){
+ if(heldRiver.get(source)===dir)return;
+ heldRiver.delete(source);heldRiver.set(source,dir);
+ moveRiver(dir);
+}
+function moveRiver(dir){
+ if(!riverStep&&!paused&&!$("dialog").open&&!lobby&&s.stage===1)beginRiverStep(dir,riverTime);
+}
+function beginRiverStep(dir,start){
+ let [dx,dy]=riverDirections[dir];
+ // A turn requested just before or after a junction follows the plank to its center first.
+ if((dy&&!Number.isInteger(s.x))||(dx&&!Number.isInteger(s.y))){
+  const cx=Math.round(s.x),cy=Math.round(s.y);
+  if(!riverTiles[cy+dy]?.[cx+dx])return;
+  dx=Math.sign(cx-s.x);dy=Math.sign(cy-s.y);
+ }
+ const x=(Math.round(s.x*5)+dx)/5,y=(Math.round(s.y*5)+dy)/5;
+ if(!onRiverRoute(x,y))return;
+ const distance=dx?110/5:65/5;
+ riverStep={fromX:s.x,fromY:s.y,x,y,start,end:start+distance/riverSpeed*1000};
+}
+function arriveRiver(x,y){
+ s.x=x;s.y=y;
+ const near=(a,b)=>Math.abs(a-x)<.31&&Math.abs(b-y)<.31;
+ const i=caches.findIndex(([a,b])=>near(a,b));
+ if(i>=0&&!s.found.includes(i)){s.found.push(i);tone(925);notify("取得標本箱 "+(i+1)+"！")}
+ if(near(6,0)){
+  if(s.found.length===2){go(2);return}
+  notify("恩哥：還有標本箱在棧道上！");
+ }
+ save();updateRiverStatus();
+}
+function updateRiverStatus(){let el=$("riverstat");if(el)el.textContent="標本箱 "+s.found.length+" / 2　｜　"+(s.found.length===2?"帶著標本走到右上角接應點。":"拖曳地圖，或按住畫面、鍵盤上的方向鍵連續移動。小心木箱！")}
 function startRiver(){const canvas=$("river"),ctx=canvas.getContext("2d");lastFrame=0;updateRiverStatus();
- canvas.onclick=e=>{let r=canvas.getBoundingClientRect(),x=Math.round(((e.clientX-r.left)*800/r.width-68)/110),y=Math.round(((e.clientY-r.top)*350/r.height-99)/65);let dx=x-s.x,dy=y-s.y;if(Math.abs(dx)+Math.abs(dy)===1)moveRiver(dx>0?"right":dx<0?"left":dy>0?"down":"up");else if(!paused)notify("點主角旁邊的一格木板。")};
+ riverListeners=new AbortController();
+ riverStep=null;heldRiver.clear();restoreRiverPosition();
+ const options={signal:riverListeners.signal};
+ document.addEventListener("keyup",e=>heldRiver.delete(e.key),options);
+ for(const button of main.querySelectorAll(".dpad button")){
+  button.onpointerdown=e=>{
+   if(e.button!==0||paused)return;
+   button.setPointerCapture(e.pointerId);
+   holdRiver(e.pointerId,button.dataset.do.slice(5));
+  };
+  button.onpointerup=button.onpointercancel=button.onlostpointercapture=e=>heldRiver.delete(e.pointerId);
+  button.oncontextmenu=e=>e.preventDefault();
+ }
+ let pointer=null,anchorX=0,anchorY=0,dragStarted=false;
+ canvas.onpointerdown=e=>{
+  if(pointer!==null||paused||e.button!==0)return;
+  pointer=e.pointerId;dragStarted=false;anchorX=e.clientX;anchorY=e.clientY;
+  canvas.setPointerCapture(pointer);
+ };
+ function steer(e){
+  const dx=e.clientX-anchorX,dy=e.clientY-anchorY;
+  if(Math.max(Math.abs(dx),Math.abs(dy))<10){heldRiver.delete("drag");return}
+  dragStarted=true;
+  const dir=Math.abs(dx)>Math.abs(dy)?(dx>0?"right":"left"):(dy>0?"down":"up");
+  anchorX=e.clientX-Math.max(-22,Math.min(22,dx));
+  anchorY=e.clientY-Math.max(-22,Math.min(22,dy));
+  holdRiver("drag",dir);
+ }
+ canvas.onpointermove=e=>{if(e.pointerId===pointer)steer(e)};
+ canvas.onpointerup=e=>{if(e.pointerId===pointer){if(!dragStarted)steer(e);stopDrag()}};
+ function stopDrag(){pointer=null;heldRiver.delete("drag")}
+ canvas.onpointercancel=canvas.onlostpointercapture=e=>{if(e.pointerId===pointer)stopDrag()};
+ function releaseAll(){stopDrag();heldRiver.clear()}
+ window.addEventListener("blur",releaseAll,options);
+ document.addEventListener("visibilitychange",releaseAll,options);
  function drawImg(id,x,y,w,h){let im=bitmap(id);if(im.complete&&im.naturalWidth)ctx.drawImage(im,x,y,w,h)}
  function rect(x,y,w,h,c){ctx.fillStyle=c;ctx.fillRect(x,y,w,h)}
  function crate(x,y,gold){rect(x-16,y-25,32,28,"#523e33");rect(x-13,y-22,26,22,gold?"#ffcf67":"#b27b46");rect(x-10,y-19,20,16,gold?"#b58b41":"#815b40");ctx.fillStyle=gold?"#fff4a8":"#ce9b6b";ctx.font="bold 20px monospace";ctx.textAlign="center";ctx.fillText(gold?"◆":"×",x,y-4)}
  function frame(t){if(!paused&&!$("dialog").open&&!document.hidden)riverTime+=lastFrame?Math.min(t-lastFrame,60):0;lastFrame=t;ctx.imageSmoothingEnabled=false;rect(0,0,800,350,"#578b91");drawImg("valley",0,0,800,350);rect(0,53,800,297,"#183b449b");for(let y=0;y<4;y++)for(let x=0;x<7;x++){if(!riverTiles[y][x])continue;let [px,py]=pos(x,y);if(riverTiles[y+1]?.[x])rect(px-16,py,32,65,"#b79469");if(riverTiles[y][x+1])rect(px,py-5,110,11,"#ad9065")}
  for(let y=0;y<4;y++)for(let x=0;x<7;x++){if(!riverTiles[y][x])continue;let [px,py]=pos(x,y);rect(px-41,py-6,82,20,"#493c33");rect(px-41,py-11,82,19,"#b79065");rect(px-39,py-10,78,4,"#d5b585");rect(px-34,py,68,2,"#856c50");for(let dx of [-35,33])rect(px+dx,py-4,3,3,"#594e44")}
  caches.forEach(([x,y],i)=>{if(!s.found.includes(i))crate(...pos(x,y),true)});let [ex,ey]=pos(6,0);if(s.hero===3){rect(ex-17,ey-20,34,18,"#a87846");rect(ex-14,ey-22,28,4,"#e0bb7d")}else{drawImg(heroFile(3),ex-21,ey-54,42,56)}ctx.textAlign="center";ctx.font="bold 14px sans-serif";rect(ex-28,ey-70,56,17,"#193c3b");ctx.fillStyle="#ffdf90";ctx.fillText("接應點",ex,ey-56);
- for(let [x,y] of obstacles()){crate(...pos(x,y),false);if(!paused&&!$("dialog").open&&riverTime>grace&&y===s.y&&Math.abs(x-s.x)<.33){s.x=0;s.y=2;grace=riverTime+1300;save();notify("被木箱碰到了！已收集的標本還在，從起點再出發。")}}
- let [px,py]=pos(s.x,s.y);rect(px-18,py-2,36,6,"#4f5243");drawImg(heroFile(s.hero),px-24,py-58,48,64);if(paused){rect(0,0,800,350,"#112b36b3");ctx.fillStyle="white";ctx.font="bold 26px sans-serif";ctx.fillText("已暫停",400,180)}anim=requestAnimationFrame(frame)}
+ const active=!paused&&!$("dialog").open&&!document.hidden;
+ let heroX=s.x,heroY=s.y;
+ if(!active)releaseAll();
+ else if(!riverStep&&heldRiver.size)beginRiverStep(Array.from(heldRiver.values()).pop(),riverTime);
+ // Carry time across step boundaries so holding a control never inserts a blank frame.
+ while(active&&riverStep&&riverTime>=riverStep.end){
+  const {x,y,end}=riverStep;riverStep=null;arriveRiver(x,y);
+  if(s.stage!==1)return;
+  heroX=x;heroY=y;
+  const dir=Array.from(heldRiver.values()).pop();
+  if(dir)beginRiverStep(dir,end);
+ }
+ if(riverStep){
+  const step=riverStep,progress=(riverTime-step.start)/(step.end-step.start);
+  heroX=step.fromX+(step.x-step.fromX)*progress;
+  heroY=step.fromY+(step.y-step.fromY)*progress;
+ }
+ for(const [x,y] of obstacles()){
+  crate(...pos(x,y),false);
+  if(active&&riverTime>grace&&Math.abs(y-heroY)<.33&&Math.abs(x-heroX)<.33){
+   heroX=s.x=0;heroY=s.y=2;riverStep=null;releaseAll();
+   grace=riverTime+1300;save();notify("被木箱碰到了！已收集的標本還在，從起點再出發。");
+  }
+ }
+ let [px,py]=pos(heroX,heroY);rect(px-18,py-2,36,6,"#4f5243");drawImg(heroFile(s.hero),px-24,py-58,48,64);if(paused){rect(0,0,800,350,"#112b36b3");ctx.fillStyle="white";ctx.font="bold 26px sans-serif";ctx.fillText("已暫停",400,180)}anim=requestAnimationFrame(frame)}
  anim=requestAnimationFrame(frame)}
 function drawModel(){
  const panel=main.querySelector(".labgrid .bench:nth-child(2)"),model=document.createElement("div");
