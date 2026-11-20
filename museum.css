@@ -1,0 +1,49 @@
+.roster{grid-template-columns:repeat(3,minmax(0,1fr))}
+.roster .char{display:flex;align-items:center;justify-content:center;gap:3px;padding:5px;font-size:14px}
+.roster .char img{width:46%;height:59px}
+.gate-note{padding:12px;border:1px dashed #647d7e;background:#193941;border-radius:8px;margin:14px auto;font-size:14px}
+.trial-log{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:0;list-style:none}
+.trial-log li{display:flex;align-items:center;justify-content:space-between;gap:5px;padding:7px 9px;text-align:left;border-radius:6px;border:1px dashed #516d74;color:#c3d2d1;font-size:13px}
+.trial-log .measured{background:#264842;border:1px solid #597d6c;color:#daf0da}
+.trial-log b{font-size:12px;white-space:nowrap}
+.observation button{width:85%;margin-top:8px;padding:0;border-color:#41666b;background:radial-gradient(ellipse at center,#34575c,#18343c);overflow:hidden}
+.observation canvas{height:165px;width:100%;border:0;background:transparent;image-rendering:auto}
+.museum-intro .dialogue{margin-top:0}
+.museum-toolbar,.museum-exit,.museum-tabs,.display-meta,.turn-controls{display:flex;align-items:center;gap:8px}
+.museum-toolbar{justify-content:space-between;gap:12px;margin:20px 0 12px}
+.museum-tabs{flex-wrap:wrap}
+.museum-tabs button{border-radius:22px;min-height:44px;padding:8px 20px}
+.museum-tabs .current,.specimen-rail .current,.pair-buttons .current{border-color:#ffd071;background:#40504b;color:#ffdf97}
+.catalog-count{font-size:14px;white-space:nowrap;color:#b7cec8}
+.museum-grid{display:grid;grid-template-columns:minmax(126px,.49fr) minmax(255px,1.45fr) minmax(235px,1fr);gap:12px;align-items:stretch}
+.specimen-rail{display:flex;flex-direction:column;gap:7px;max-height:440px;overflow:auto;padding:2px 6px 5px 2px;scrollbar-color:#567579 #17343c}
+.specimen-rail button{display:flex;align-items:center;text-align:left;justify-content:flex-start;gap:6px;padding:6px 8px;flex-shrink:0;background:#152e37;line-height:1.35}
+.cabinet-thumb{width:46px;height:38px;flex-shrink:0;border:0;image-rendering:auto;pointer-events:none;background:transparent}
+.museum-display{position:relative;min-width:0;align-self:start;overflow:hidden;border-radius:12px;border:1px solid #668487;background:radial-gradient(ellipse at 50% 65%,#41646a 0%,#1f3b47 58%,#142c38 100%);text-align:center}
+.museum-display:before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.22;background-image:linear-gradient(#87b2aa25 1px,transparent 1px),linear-gradient(90deg,#87b2aa25 1px,transparent 1px);background-size:27px 27px}
+.display-meta{position:relative;justify-content:space-between;margin:15px 17px 0;color:#dbecda;font:700 12px "Microsoft JhengHei",sans-serif;letter-spacing:1px}
+#museum-turntable{position:relative;border:0;width:100%;height:clamp(200px,22vw,310px);background:transparent;image-rendering:auto}
+.turn-controls{position:relative;justify-content:center}
+.turn-controls button{font-size:14px;background:#18323b;padding:6px 12px}
+.turn-controls output{min-width:46px;font: bold 15px monospace;color:#ffe5ac}
+.view-caption{position:relative;font-size:13px;margin:8px 0 14px;color:#c7d9d8}
+.exhibit-label{padding:18px;border:1px solid #4a666b;border-radius:11px;align-self:start;background:#233e45}
+.exhibit-label h2{font-size:clamp(24px,3vw,35px);margin:4px 0 12px;color:#ffe0a0}
+.exhibit-label h3{font-size:15px;letter-spacing:1px;margin:12px 0 3px}
+.exhibit-label p{font-size:15px;line-height:1.65}
+.hardness,.rock-hardness{border-top:1px dashed #5b7577;margin-top:14px;padding-top:12px}
+.hardness{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.hardness span{font-size:15px;font-weight:bold}.hardness strong{background:#ffd071;color:#293632;border-radius:6px;padding:3px 11px}
+.hardness small{color:#c0d9cb}
+.exhibit-label .rock-hardness{font-size:13px}
+.parent-gallery{margin-top:22px;border-top:1px solid #486169;padding-top:16px}
+.parent-gallery h2{font-size:22px}.parent-gallery>p{margin:4px 0 12px;font-size:14px}
+.pair-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.pair-card{min-width:0;border:1px solid #425d63;border-radius:9px;padding:10px;background:#172f39}
+.pair-buttons{display:flex;justify-content:space-evenly;align-items:center;gap:5px;color:#eabf78}
+.pair-buttons button{font-size:14px;color:#eeeeda;flex:1;display:grid;justify-items:center;padding:4px;min-width:0}
+.pair-card p{font-size:13px;line-height:1.65;margin:8px 0 0}
+.museum-exit{flex-wrap:wrap;justify-content:center;margin-top:20px}
+@media(max-width:970px){.museum-grid{grid-template-columns:minmax(225px,1.05fr) minmax(230px,1fr)}.specimen-rail{grid-column:1/-1;flex-direction:row;max-height:none}.specimen-rail button{min-height:48px}.roster .char{flex-direction:column;padding:2px}.roster .char img{width:100%;height:43px}.trial-log{grid-template-columns:1fr}}
+@media(max-width:680px){.museum-grid,.pair-grid{grid-template-columns:1fr}.museum-tabs{gap:4px}.museum-tabs button{padding:6px 10px;font-size:14px}.catalog-count{display:none}.museum-toolbar{margin:12px 0 8px}.exhibit-label{padding:14px}.specimen-rail{width:100%;flex-wrap:wrap;gap:4px}.specimen-rail button{flex:1 0 21%;display:grid;justify-items:center;text-align:center;font-size:12px;padding:4px}.specimen-rail .cabinet-thumb{height:26px}.exhibit-label h2{margin-bottom:4px}.pair-buttons button{display:flex;align-items:center;justify-content:center}.roster .char{flex-direction:row;min-height:65px;font-size:13px}.roster .char img{width:45%;height:50px}.trial-log{grid-template-columns:1fr 1fr}.museum-tabs{flex-wrap:nowrap}.team{gap:3px}}
+@media(max-width:400px){.trial-log{grid-template-columns:1fr}.museum-tabs button{padding:6px 8px}}
