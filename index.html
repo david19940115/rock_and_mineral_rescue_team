@@ -1,3 +1,47 @@
 <!doctype html>
-<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#102833"><title>六年甲班岩礦救援隊</title><link rel="stylesheet" href="game.css"><link rel="stylesheet" href="museum.css"><link rel="stylesheet" href="victory.css"><script src="catalog.js" defer></script><script src="turntable.js" defer></script><script src="museum.js" defer></script><script src="conveyor.js" defer></script><script src="game.js" defer></script><script src="music.js" defer></script></head>
-<body><header><div class="brand"><span class="crest">◆</span><span>六年甲班岩礦救援隊</span></div><nav><button id="sound" type="button" aria-label="音樂與音效" aria-pressed="true">♫ 開</button><button id="book">▤　圖鑑</button><button id="help" aria-label="玩法說明">？</button></nav></header><audio id="music-track" src="assets/valley-stroll.wav" loop preload="metadata" playsinline></audio><main id="main"></main><footer><span>花蓮・玉里</span><span>自然科學　／　六年級</span></footer><dialog id="dialog"><div id="dialogbody"></div><button id="close" class="action">返回遊戲</button></dialog><dialog id="victory" aria-labelledby="victory-title" aria-describedby="victory-next"></dialog><div id="notice" role="status"></div></body></html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#102833">
+  <title>岩礦探險｜選擇地點</title>
+  <style>
+    html, body {
+      margin: 0;
+      overflow: hidden;
+      background: #0c2029;
+    }
+    #game-frame {
+      position: fixed;
+      top: 0;
+      left: 0;
+      display: block;
+      width: 100vw;
+      height: 100vh;
+      width: 100dvw;
+      height: 100dvh;
+      border: 0;
+    }
+    @media (orientation: portrait) and (any-pointer: coarse) {
+      /* Use a landscape viewport inside the frame so controls and dialogs rotate together. */
+      #game-frame {
+        left: 100vw;
+        left: 100dvw;
+        width: 100vh;
+        height: 100vw;
+        width: 100dvh;
+        height: 100dvw;
+        transform-origin: top left;
+        transform: rotate(90deg);
+      }
+    }
+  </style>
+</head>
+<body>
+  <iframe id="game-frame" title="岩礦探險" allow="autoplay"></iframe>
+  <script>
+    const gameFrame = document.getElementById("game-frame");
+    gameFrame.src = "game.html" + window.location.search + window.location.hash;
+  </script>
+</body>
+</html>

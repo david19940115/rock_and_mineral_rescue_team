@@ -68,7 +68,7 @@ function museumScreen() {
     '<p class="view-caption">左右拖曳觀察立體示意模型</p></div>'+
     '<article class="exhibit-label"><span class="eyebrow">館藏標本</span><h2>'+exhibit.name+'</h2><h3>外觀與特色</h3><p>'+exhibit.look+
     '</p><h3>生活與用途</h3><p>'+exhibit.use+'</p>'+hardness+'</article></div>'+
-    parentGallery(id)+'<div class="museum-exit">'+btn("results","查看救援成績")+btn("soil","前往玉里稻田")+btn("race","挑戰輸送帶競速")+'</div>';
+    parentGallery(id)+'<div class="museum-exit">'+btn("results","查看救援成績")+btn("soil","前往"+labels[6])+btn("race","挑戰輸送帶競速")+'</div>';
 }
 
 const museumThumbnails = new Map();
