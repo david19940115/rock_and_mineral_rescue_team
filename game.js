@@ -99,7 +99,8 @@ function renderRoster(){
  ).join("")+(suao?"":btn("roster-"+(1-rosterPage),rosterPage?"上一頁":"下一頁","roster-pager"))+'</div>';
 }
 function renderLobby(){const resume=!!s;main.innerHTML='<div class="lobby"><section class="scene'+(suao?' scene-suao':'')+'"><div class="scenehead"><span class="eyebrow">✦　'+(suao?"YILAN · SU'AO":"HUALIEN · YULI")+'</span><h1>'+(suao?'<span class="class-name">礦物獵人</span> 地底寶藏大冒險':'<span class="class-name">六年甲班</span>岩礦救援隊')+'</h1><p>找回失落標本，重開校園自然展。</p></div>'+hero(pick,"sprite lead")+'<div class="scenefoot"><span class="tag">●　集合地點</span><b>'+(suao?"蘇澳・南方澳漁港":"花東縱谷・玉里田野")+'</b></div></section><section class="box"><span class="eyebrow">SELECT YOUR EXPLORER</span><h2>選擇探險隊員</h2><p>選一位出發，其他'+(suao?"四":"九")+'位將在途中接應。</p>'+renderRoster()+'<p class="desc"><strong>◆　'+people[pick][0]+'</strong><br>'+people[pick][1]+'</p>'+btn("start","▶　"+(resume?"開啟新冒險":"集合出發"),"action wide")+(resume?btn("resume","繼續"+people[s.hero][0]+"的進度 · "+labels[s.stage],"wide",'style="margin-top:8px"'):"")+'</section></div><a class="location-return" href="#locations">←　更換地點</a><section class="route"><h3>探險路線</h3><div class="missions">'+names.map((name,i)=>'<div class="mission">'+img(["limestone","quartz","granite"][i])+'<div><small>MISSION 0'+(i+1)+'</small><strong>'+name+'</strong></div></div>').join("")+'</div></section>'}
-function riverScreen(){const meet=s.hero===3&&suao?"到右岸接應點":"去右岸找"+people[3][0];return talk(0,"自然展的推車翻了！沿棧道拿回兩箱標本，再"+meet+"。","我來帶隊！先拿回兩箱標本，再"+meet+"。")+'<div class="riverwrap"><canvas id="river" width="800" height="350" role="img" aria-label="棧道地圖，可用手指拖曳、畫面方向鈕或鍵盤方向鍵移動"></canvas></div><div class="river-controls"><div class="dpad">'+[["up","▲","上"],["left","◀","左"],["down","▼","下"],["right","▶","右"]].map(a=>btn("move-"+a[0],a[1],"",'aria-label="往'+a[2]+'"')).join("")+'</div><div class="river-pause">'+btn("pause",paused?"▶ 繼續":"Ⅱ 暫停")+'</div></div><p align="center" id="riverstat">標本箱 '+s.found.length+' / 2　｜　拖曳地圖或按方向鍵移動，避開移動的木箱。</p>'}
+function riverContact(){return s.hero===3?4:3}
+function riverScreen(){const meet="去右岸找"+people[riverContact()][0];return talk(0,"自然展的推車翻了！沿棧道拿回兩箱標本，再"+meet+"。","我來帶隊！先拿回兩箱標本，再"+meet+"。")+'<div class="riverwrap"><canvas id="river" width="800" height="350" role="img" aria-label="棧道地圖，可用手指拖曳、畫面方向鈕或鍵盤方向鍵移動"></canvas></div><div class="river-controls"><div class="dpad">'+[["up","▲","上"],["left","◀","左"],["down","▼","下"],["right","▶","右"]].map(a=>btn("move-"+a[0],a[1],"",'aria-label="往'+a[2]+'"')).join("")+'</div><div class="river-pause">'+btn("pause",paused?"▶ 繼續":"Ⅱ 暫停")+'</div></div><p align="center" id="riverstat">標本箱 '+s.found.length+' / 2　｜　拖曳地圖或按方向鍵移動，避開移動的木箱。</p>'}
 const specimens=["limestone","granite"],parts=[["calcite"],["feldspar","quartz","mica"]];
 function rockQuestions(n) {
  const ids=n?["quartz","talc","mica","feldspar"]:["talc","calcite","quartz"];
@@ -223,7 +224,7 @@ function arriveRiver(x,y){
  if(i>=0&&!s.found.includes(i)){s.found.push(i);tone(925);notify("取得標本箱 "+(i+1)+"！")}
  if(near(6,0)){
   if(s.found.length===2){go(2);return}
-  notify(people[3][0]+"：還有標本箱在棧道上！");
+  notify(people[riverContact()][0]+"：還有標本箱在棧道上！");
  }
  save();updateRiverStatus();
 }
@@ -269,7 +270,7 @@ function startRiver(){const canvas=$("river"),ctx=canvas.getContext("2d");lastFr
  function crate(x,y,gold){rect(x-16,y-25,32,28,"#523e33");rect(x-13,y-22,26,22,gold?"#ffcf67":"#b27b46");rect(x-10,y-19,20,16,gold?"#b58b41":"#815b40");ctx.fillStyle=gold?"#fff4a8":"#ce9b6b";ctx.font="bold 20px monospace";ctx.textAlign="center";ctx.fillText(gold?"◆":"×",x,y-4)}
  function frame(t){if(!paused&&!$("dialog").open&&!document.hidden)riverTime+=lastFrame?Math.min(t-lastFrame,60):0;lastFrame=t;ctx.imageSmoothingEnabled=false;rect(0,0,800,350,"#578b91");drawImg("valley",0,0,800,350);rect(0,53,800,297,"#183b449b");for(let y=0;y<4;y++)for(let x=0;x<7;x++){if(!riverTiles[y][x])continue;let [px,py]=pos(x,y);if(riverTiles[y+1]?.[x])rect(px-16,py,32,65,"#b79469");if(riverTiles[y][x+1])rect(px,py-5,110,11,"#ad9065")}
  for(let y=0;y<4;y++)for(let x=0;x<7;x++){if(!riverTiles[y][x])continue;let [px,py]=pos(x,y);rect(px-41,py-6,82,20,"#493c33");rect(px-41,py-11,82,19,"#b79065");rect(px-39,py-10,78,4,"#d5b585");rect(px-34,py,68,2,"#856c50");for(let dx of [-35,33])rect(px+dx,py-4,3,3,"#594e44")}
- caches.forEach(([x,y],i)=>{if(!s.found.includes(i))crate(...pos(x,y),true)});let [ex,ey]=pos(6,0);if(s.hero===3){rect(ex-17,ey-20,34,18,"#a87846");rect(ex-14,ey-22,28,4,"#e0bb7d")}else{drawImg(heroFile(3),ex-21,ey-54,42,56)}ctx.textAlign="center";ctx.font="bold 14px sans-serif";rect(ex-28,ey-70,56,17,"#193c3b");ctx.fillStyle="#ffdf90";ctx.fillText("接應點",ex,ey-56);
+ caches.forEach(([x,y],i)=>{if(!s.found.includes(i))crate(...pos(x,y),true)});let [ex,ey]=pos(6,0);drawImg(heroFile(riverContact()),ex-21,ey-54,42,56);ctx.textAlign="center";ctx.font="bold 14px sans-serif";rect(ex-28,ey-70,56,17,"#193c3b");ctx.fillStyle="#ffdf90";ctx.fillText("接應點",ex,ey-56);
  const active=!paused&&!$("dialog").open&&!document.hidden;
  let heroX=s.x,heroY=s.y;
  if(!active)releaseAll();
